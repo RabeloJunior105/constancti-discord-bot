@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/database/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * ======================================================
+ * ENUMS
+ * ======================================================
+ */
+enum ActionStatus {
+  EM_ANDAMENTO
+  VITORIA
+  DERROTA
+  QTA
+}
+
+/**
+ * ======================================================
+ * ACTION CONFIG (TIPOS DE AÇÃO)
+ * ======================================================
+ */
+model ActionConfig {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  actions      Action[]
+  actionDrafts ActionDraft[]
+}
+
+/**
+ * ======================================================
+ * ACTION (AÇÃO EM ANDAMENTO / FINALIZADA)
+ * ======================================================
+ */
+model Action {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  status      ActionStatus @default(EM_ANDAMENTO)
+
+  responsible String
+
+  actionConfigId Int
+  actionConfig   ActionConfig @relation(fields: [actionConfigId], references: [id])
+
+  createdAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  participants ActionParticipant[]
+}
+
+/**
+ * ======================================================
+ * PARTICIPANT (PESSOA ÚNICA NO SISTEMA)
+ * ======================================================
+ */
+model Participant {
+  id         String   @id @default(uuid())
+  idComplexo String   @unique
+  name       String
+  unit       String?
+  createdAt  DateTime @default(now())
+
+  actions       ActionParticipant[]
+  drafts        ActionDraft[]       @relation("DraftParticipants")
+  actionDraftId String?
+}
+
+/**
+ * ======================================================
+ * ACTION PARTICIPANT (LIGAÇÃO)
+ * ======================================================
+ */
+model ActionParticipant {
+  id String @id @default(uuid())
+
+  actionId      String
+  participantId String
+
+  action      Action      @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  participant Participant @relation(fields: [participantId], references: [id])
+}
+
+enum PunishmentType {
+  ADV1
+  ADV2
+  ADV3
+  SUSPENSAO
+}
+
+enum PunishmentStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
+// ===============================
+// MODELS
+// ===============================
+model Punishment {
+  id String @id @default(uuid())
+
+  // Discord
+  memberId String // ID do usuário no Discord
+  guildId  String // ID do servidor
+
+  // Punição
+  type   PunishmentType
+  reason String
+  status PunishmentStatus @default(ACTIVE)
+
+  // Controle de tempo
+  expiresAt DateTime?
+
+  // Auditoria
+  appliedBy String // ID do usuário ou SYSTEM
+  createdAt DateTime @default(now())
+
+  canceledBy String?
+  canceledAt DateTime?
+
+  // Índices
+  @@index([memberId, guildId])
+  @@index([status])
+  @@index([type])
+  @@index([expiresAt])
+}
+
+model ActionDraft {
+  id String @id @default(uuid())
+
+  // Controle
+  userId  String // Discord user id
+  guildId String // Opcional, mas altamente recomendado
+
+  // Tipo da ação
+  actionConfigId Int
+  actionConfig   ActionConfig @relation(fields: [actionConfigId], references: [id])
+
+  // Input bruto do usuário
+  rawParticipants String
+
+  // Estado processado
+  parsedNames  String[] // todos os nomes normalizados
+  missingNames String[] // ainda não cadastrados
+
+  // Participantes já resolvidos
+  resolvedParticipants Participant[] @relation("DraftParticipants")
+
+  // Status
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime
+
+  @@index([userId, guildId])
+  @@index([expiresAt])
+}
