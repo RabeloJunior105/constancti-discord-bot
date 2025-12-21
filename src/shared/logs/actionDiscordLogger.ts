@@ -6,8 +6,6 @@ import {
     TextDisplayBuilder,
 } from "discord.js";
 
-type LogLevel = "INFO" | "WARN" | "ERROR" | "AUDIT";
-
 export class LogComponent {
     private readonly LOG_CHANNEL_ID = "1449482056206782507";
     private client: any;
