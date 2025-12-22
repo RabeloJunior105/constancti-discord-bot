@@ -1,12 +1,11 @@
-version: "3.9"
-
 services:
   bot:
-    build: .
-    container_name: recom-discord-bot
+    image: juiim/discord-bot-recom:main
+    container_name: discord-bot
     restart: unless-stopped
+
     env_file:
       - .env
 
-volumes:
-  postgres_data:
+    environment:
+      NODE_OPTIONS: "--import=./build/shims/fs-glob.js"
