@@ -3,7 +3,7 @@ import prisma from "#database";
 
 createResponder({
     customId: "acao_finish_qta:id",
-    types: [ResponderType.ModaBlComponent],
+    types: [ResponderType.ModalComponent],
 
     async run(interaction) {
         const actionId = interaction.customId.split(":")[1];

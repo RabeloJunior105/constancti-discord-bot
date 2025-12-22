@@ -78,11 +78,12 @@ export function buildReviewContainer({
 
             container.addSectionComponents(
                 new SectionBuilder({
-                    components: [nameBlock],
+                    components: [nameBlock.toJSON()],
                     accessory: new ButtonBuilder()
                         .setCustomId(`acao_register_one:${draftId}:${index}`)
                         .setLabel("Vincular / Cadastrar")
-                        .setStyle(ButtonStyle.Secondary),
+                        .setStyle(ButtonStyle.Secondary)
+                        .toJSON(),
                 }),
             );
         });
