@@ -1,12 +1,21 @@
-FROM docker.io/library/node:21.5
-
+# ---------- Builder ----------
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-COPY ./package*.json .
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 
-COPY . .
+COPY tsconfig.json ./
+COPY src ./src
 
 RUN npm run build
 
-CMD ["npm", "run", "start"]
+# ---------- Runtime ----------
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/build ./build
+
+CMD ["node", "build/index.js"]
