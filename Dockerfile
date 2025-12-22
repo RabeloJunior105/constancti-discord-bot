@@ -1,9 +1,10 @@
-FROM docker.io/library/node:21.5
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY ./package*.json .
-RUN npm install
+COPY package*.json ./
+
+RUN npm ci --omit=dev
 
 COPY . .
 
