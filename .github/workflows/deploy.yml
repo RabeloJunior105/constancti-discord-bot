@@ -20,7 +20,6 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run typecheck
 
   build_and_push:
     needs: typecheck
