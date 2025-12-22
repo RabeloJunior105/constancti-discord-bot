@@ -1,13 +1,20 @@
-FROM node:20-alpine
-
+# ---------- BUILD ----------
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-
-RUN npm ci --omit=dev
+RUN npm ci
 
 COPY . .
-
 RUN npm run build
 
-CMD ["npm", "run", "start:prod"]
+# ---------- RUNTIME ----------
+FROM node:20-alpine
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY --from=builder /app/build ./build
+
+CMD ["node", "--env-file=.env", "build/index.js"]
