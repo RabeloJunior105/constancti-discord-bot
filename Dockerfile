@@ -32,4 +32,5 @@ COPY --from=builder /app/constants.json ./constants.json
 COPY --from=builder /app/prisma ./prisma
 
 # Entry point
-CMD ["node", "build/index.js"]
+CMD ["node", "--import", "./build/shims/fs-glob.js", "build/index.js"]
+
