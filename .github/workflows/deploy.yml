@@ -58,8 +58,13 @@ jobs:
   deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
-
     steps:
+      - name: Debug SSH secrets
+        run: |
+          echo "Host set: ${{ secrets.DO_HOST != '' }}"
+          echo "User set: ${{ secrets.DO_USER != '' }}"
+          echo "Key set:  ${{ secrets.DO_SSH_KEY != '' }}"
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
