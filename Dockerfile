@@ -1,26 +1,12 @@
-# ---------- Builder ----------
-FROM node:20-alpine AS builder
+FROM docker.io/library/node:21.5
+
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-COPY prisma ./prisma
-RUN npm ci
+COPY ./package*.json .
+RUN npm install
 
-COPY tsconfig.json ./
-COPY constants.json ./constants.json
-COPY src ./src
+COPY . .
 
 RUN npm run build
 
-
-# ---------- Runtime ----------
-FROM node:20-alpine AS runtime
-WORKDIR /app
-ENV NODE_ENV=production
-
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/build ./build
-COPY --from=builder /app/constants.json ./constants.json
-COPY --from=builder /app/prisma ./prisma
-
-CMD ["node", "build/index.js"]
+CMD ["npm", "run", "start"]
