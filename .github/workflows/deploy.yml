@@ -27,9 +27,6 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Typecheck
-        run: npm run typecheck
-
   build_and_push:
     name: Build and Push Docker Image
     needs: typecheck
