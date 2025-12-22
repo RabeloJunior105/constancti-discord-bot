@@ -1,48 +1,33 @@
-# =========================
-# STAGE 1 — BUILD
-# =========================
+# ---------- Builder ----------
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Dependências necessárias para Prisma
-RUN apk add --no-cache openssl libc6-compat
-
-# Copia arquivos de dependência
+# Dependências
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
 
-# Instala dependências
 RUN npm ci
 
-# Copia o resto do projeto
-COPY . .
+# Arquivos de build
+COPY tsconfig.json ./
+COPY constants.json ./constants.json
+COPY src ./src
 
-# Gera Prisma Client
-RUN npx prisma generate
-
-# Build do TypeScript
+# Build (gera /build)
 RUN npm run build
 
 
-# =========================
-# STAGE 2 — RUNTIME
-# =========================
-FROM node:20-alpine
+# ---------- Runtime ----------
+FROM node:20-alpine AS runtime
 
 WORKDIR /app
-
-RUN apk add --no-cache openssl libc6-compat
-
-# Copia apenas o necessário
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY package.json ./
-
-# Segurança básica
-RUN addgroup -S app && adduser -S app -G app
-USER app
-
 ENV NODE_ENV=production
 
-CMD ["node", "dist/index.js"]
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/constants.json ./constants.json
+COPY --from=builder /app/prisma ./prisma
+
+CMD ["node", "build/index.js"]
