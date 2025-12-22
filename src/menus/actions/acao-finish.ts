@@ -17,7 +17,6 @@ export function buildActionFinishContainer(actionId: string) {
     );
 
     container.addSeparatorComponents(new SeparatorBuilder());
-
     container.addActionRowComponents(
         new ActionRowBuilder<ButtonBuilder>({
             components: [
