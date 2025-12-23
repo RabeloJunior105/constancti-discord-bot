@@ -8,7 +8,7 @@ RUN npm ci
 COPY . .
 
 # Prisma generate NÃO deve depender de DATABASE_URL
-RUN npx prisma generate
+#RUN npx prisma generate
 
 RUN npm run build
 
