@@ -1,20 +1,15 @@
-# ---------- BUILD ----------
-FROM node:20-alpine AS builder
+FROM node:22.16
+
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY ./package*.json .
+
+RUN npm install
 
 COPY . .
+
+RUN npx prisma generate
+
 RUN npm run build
 
-# ---------- RUNTIME ----------
-FROM node:20-alpine
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-COPY --from=builder /app/build ./build
-
-CMD ["node", "--env-file=.env", "build/index.js"]
+CMD ["npm", "run", "start"]

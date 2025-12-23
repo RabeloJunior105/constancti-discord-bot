@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   bot:
     image: juiim/discord-bot-recom:main
@@ -7,5 +9,11 @@ services:
     env_file:
       - .env
 
-    environment:
-      NODE_OPTIONS: "--import=./build/shims/fs-glob.js"
+    # Opcional, mas recomendado
+    stop_grace_period: 30s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
