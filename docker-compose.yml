@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   bot:
     image: juiim/discord-bot-recom:main
