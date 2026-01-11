@@ -21,5 +21,3 @@ This is the most complete discord bot base you've ever seen! Developed by [@rinc
 - [Commands](https://constatic-docs.vercel.app/docs/discord/commands)
 - [Responder](https://constatic-docs.vercel.app/docs/discord/responders)
 - [Events](https://constatic-docs.vercel.app/docs/discord/events)
-
-eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjQ1MzcxMTAwMTA3NzkxNDMyNzM3ODM1MzMiLCJrZXkiOiIxY2FhMzY4ZDczZTE2NzczMTAwMzY5NDc3M2RiIn0.Y80b5dT9cTVqylg8x5GBe8ngJXIvFQYw30KTjjpRF6k

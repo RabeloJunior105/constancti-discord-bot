@@ -1,4 +1,5 @@
 import { validateEnv } from "#base";
+import "dotenv/config";
 import { z } from "zod";
 
 export const env = validateEnv(z.object({
