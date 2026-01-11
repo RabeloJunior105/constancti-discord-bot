@@ -7,8 +7,8 @@ RUN npm ci
 
 COPY . .
 
-# Prisma generate NÃO deve depender de DATABASE_URL
-#RUN npx prisma generate
+# COPIA O .env PARA DENTRO DA IMAGEM
+COPY .env .env
 
 RUN npm run build
 
