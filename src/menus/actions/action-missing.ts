@@ -53,7 +53,7 @@ export function buildReviewContainer({
             new TextDisplayBuilder().setContent(
                 [
                     `🟢 **Vinculados (${found.length})**`,
-                    ...found.map(p => `• ${p.name}`),
+                    ...found.map((p: any) => `> [${p.unit}] ${p.idComplexo} - ${p.name}`),
                 ].join("\n"),
             ),
         );
