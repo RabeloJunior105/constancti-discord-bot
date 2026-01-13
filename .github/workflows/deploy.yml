@@ -27,7 +27,14 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      # Garante que o projeto builda antes de tentar dockerizar
+      # 🔥 CRIA O .env COMPLETO PARA O BUILD
+      - name: Create .env file
+        run: |
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
+          echo "NODE_OPTIONS=${{ secrets.NODE_OPTIONS }}" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+
+      # Garante que Prisma e build funcionam antes de dockerizar
       - name: Prisma Generate
         run: npx prisma generate
         env:
@@ -44,6 +51,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # 🔥 CRIA O .env TAMBÉM NO CONTEXTO DO DOCKER BUILD
+      - name: Create .env file
+        run: |
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
+          echo "NODE_OPTIONS=${{ secrets.NODE_OPTIONS }}" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
