@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   typecheck:
-    name: Typecheck
+    name: Typecheck & Build Check
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +26,15 @@ jobs:
 
       - name: Install deps
         run: npm ci
+
+      # Garante que o projeto builda antes de tentar dockerizar
+      - name: Prisma Generate
+        run: npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Build
+        run: npm run build
 
   build_and_push:
     name: Build and Push Docker Image
@@ -63,6 +72,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
 
   deploy:
     name: Deploy to DigitalOcean
